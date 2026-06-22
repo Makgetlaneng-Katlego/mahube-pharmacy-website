@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420">
+<rect width="760" height="420" rx="22" fill="#f7fbff"/>
+<rect x="90" y="55" width="300" height="310" rx="18" fill="#fff" stroke="#dfe8f3" stroke-width="4"/>
+<rect x="125" y="95" width="230" height="22" rx="6" fill="#0057b8"/>
+<rect x="125" y="145" width="190" height="12" rx="6" fill="#cad8e8"/>
+<rect x="125" y="175" width="220" height="12" rx="6" fill="#cad8e8"/>
+<rect x="125" y="205" width="160" height="12" rx="6" fill="#cad8e8"/>
+<path d="M235 250v70M200 285h70" stroke="#37a94b" stroke-width="18" stroke-linecap="round"/>
+<circle cx="535" cy="205" r="105" fill="#e0f2ff"/>
+<path d="M500 178h70M535 143v70" stroke="#0057b8" stroke-width="20" stroke-linecap="round"/>
+<text x="430" y="345" font-family="Arial" font-size="28" font-weight="900" fill="#002f6c">Prescription Upload</text>
+</svg>

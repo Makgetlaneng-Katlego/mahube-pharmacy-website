@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="170" viewBox="0 0 240 170">
+<rect width="240" height="170" fill="white"/>
+<ellipse cx="120" cy="145" rx="70" ry="12" fill="#dce6f3"/>
+<rect x="55" y="50" width="130" height="72" rx="8" fill="#ffffff" stroke="#d9e3ef"/>
+<rect x="68" y="67" width="80" height="10" rx="4" fill="#0d61a7"/>
+<rect x="68" y="88" width="95" height="8" rx="4" fill="#9cc3e7"/>
+<rect x="152" y="65" width="20" height="20" rx="3" fill="#ff8a00"/>
+<text x="68" y="110" font-family="Arial" font-weight="900" font-size="17" fill="#0d61a7">Ventolin</text>
+</svg>

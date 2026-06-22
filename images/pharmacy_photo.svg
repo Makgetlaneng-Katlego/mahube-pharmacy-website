@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460">
+<rect width="900" height="460" rx="20" fill="#eaf5ff"/>
+<rect x="70" y="90" width="760" height="300" rx="18" fill="#fff" stroke="#d8e7f7" stroke-width="4"/>
+<rect x="100" y="130" width="220" height="220" rx="12" fill="#f4f8fc"/>
+<rect x="360" y="130" width="440" height="52" rx="10" fill="#0057b8"/>
+<text x="390" y="165" font-family="Arial" font-size="30" font-weight="900" fill="#fff">MAHUBE PHARMACY</text>
+<rect x="360" y="210" width="120" height="90" rx="12" fill="#37a94b" opacity=".18"/>
+<rect x="510" y="210" width="120" height="90" rx="12" fill="#0057b8" opacity=".14"/>
+<rect x="660" y="210" width="120" height="90" rx="12" fill="#ff8a00" opacity=".16"/>
+<path d="M210 165v105M157 217h105" stroke="#37a94b" stroke-width="24" stroke-linecap="round"/>
+<text x="370" y="340" font-family="Arial" font-size="24" font-weight="700" fill="#002f6c">Healthcare products • Prescriptions • Consultation</text>
+</svg>

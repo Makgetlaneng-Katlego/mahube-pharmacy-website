@@ -1,0 +1,10 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Medication Reminder - Mahube Pharmacy</title><link rel="stylesheet" href="style.css"></head><body>
+<div class="top-strip"><span>Mahube Pharmacy online health store</span><span>Affordable healthcare products and pharmacist support</span></div>
+<header class="main-header">
+<a href="index.php"><img class="logo" src="images/logo.svg" alt="Mahube Pharmacy"></a>
+<div class="searchbar"><input placeholder="Search for medicines, vitamins and health products"><button>🔍</button></div>
+<div class="header-actions"><a href="login.php">Login</a><a href="register.php">Register</a><a class="action-icon" href="profile.php">👤</a><a class="action-icon" href="cart.php">🛒<span class="count cart-count">0</span></a></div>
+</header>
+<nav class="navbar"><a href="index.php" class="">Home</a><a href="products.php" class="">Products</a><a href="about.php" class="">About</a><a href="services.php" class="active">Services</a><a href="prescription.php">Prescriptions</a><a href="consultation.php">Consultation</a></nav>
+<div class="category-bar"><a href="products.php">Shop All</a><a href="products.php">Pain Relief</a><a href="products.php">Cold & Flu</a><a href="products.php">Vitamins</a><a href="services.php">Clinic Services</a></div>
+<main class="wrapper"><h1 class="page-title">Medication Reminder</h1><div class="content-card"><p>Set a medication reminder.</p></div><section class="content-card form"><div id="msg" class="msg"></div><form onsubmit="submitDemo('msg','Submitted successfully!');return false;"><label>Medicine</label><input required><label>Time</label><input type='time' required><button class="btn" style="width:100%">Submit</button></form></section></main><footer class="footer"><span>Mahube Pharmacy © 2026</span><div class="footer-links"><a href="about.php">About</a><a href="services.php">Services</a><a href="products.php">Products</a><a href="contact.php">Contact</a></div></footer><script src="app.js"></script></body></html>
