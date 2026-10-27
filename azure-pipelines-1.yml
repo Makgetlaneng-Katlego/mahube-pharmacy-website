@@ -1,0 +1,26 @@
+# ... (Build stage remains the same) ...
+
+- stage: Deploy
+  displayName: 'Deploy via Publish Profile'
+  dependsOn: Build
+  jobs:
+  - deployment: DeploymentJob
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureRmWebAppDeployment@5
+            displayName: 'Deploy with Publish Profile'
+            inputs:
+              ConnectionType: 'PublishProfile'
+              # Path to the .pubxml or .PublishSettings file
+              # If using a Secure File, you must first download it
+              PublishProfilePath: '$(System.DefaultWorkingDirectory)/**/*.PublishSettings'
+              # Password is usually not needed if the file contains it,
+              # but you can provide a secret variable if required.
+              # PublishProfilePassword: $(publishProfilePassword)
+              appType: 'webAppLinux'
+              WebAppName: $(webAppName)
+              packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              RuntimeStack: 'PHP|8.2'
