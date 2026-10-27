@@ -1,0 +1,178 @@
+# =============================================================================
+# Azure DevOps Pipeline for PHP Web App on Azure App Service (Linux)
+# =============================================================================
+
+# Trigger: runs pipeline on pushes to the main branch
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - README.md
+      - '*.md'
+
+# Do not trigger on PRs (deployment is main-branch only); adjust if needed
+pr: none
+
+# =============================================================================
+# VARIABLES — 🔧 UPDATE THESE VALUES FOR YOUR PROJECT
+# =============================================================================
+variables:
+  # Name of the ARM service connection created in Azure DevOps
+  # (Project Settings > Service connections)
+  azureSubscription: 'my-azure-service-connection'
+
+  # Name of the Web App you created in the Azure Portal
+  webAppName: 'my-php-web-app'
+
+  # Environment name (used for approval gates & deployment history)
+  environmentName: 'php-app-prod'
+
+  # Build agent VM image
+  vmImageName: 'ubuntu-latest'
+
+  # PHP version to use during build (must match App Service runtime)
+  phpVersion: '8.2'
+
+  # Root of the application source (leave as-is for repo root)
+  rootFolder: '$(System.DefaultWorkingDirectory)'
+
+  # Set to 'true' to run "composer install" during build
+  runComposerInstall: 'true'
+
+  # Set to 'true' to run tests before deploy
+  runTests: 'false'
+
+# =============================================================================
+# STAGES
+# =============================================================================
+stages:
+
+# -----------------------------------------------------------------------------
+# STAGE 1: BUILD
+# -----------------------------------------------------------------------------
+- stage: Build
+  displayName: '🔨 Build & Package'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build PHP Application'
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    # --- 1. Set PHP version on the build agent -----------------------------
+    - script: |
+        sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+        sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
+        sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
+        sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
+        sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
+        php -version
+      displayName: 'Use PHP $(phpVersion)'
+
+    # --- 2. Validate composer.json if present ------------------------------
+    - script: |
+        if [ -f composer.json ]; then
+          composer validate --no-check-publish
+        else
+          echo "No composer.json found, skipping validation."
+        fi
+      workingDirectory: $(rootFolder)
+      displayName: 'Validate composer.json'
+
+    # --- 3. Install Composer dependencies (conditional) --------------------
+    - script: |
+        if [ -f composer.json ]; then
+          composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
+        else
+          echo "No composer.json found, skipping composer install."
+        fi
+      workingDirectory: $(rootFolder)
+      displayName: 'Composer install'
+      condition: and(succeeded(), eq(variables.runComposerInstall, 'true'))
+
+    # --- 4. Run tests (optional) -------------------------------------------
+    - script: |
+        if [ -f vendor/bin/phpunit ]; then
+          vendor/bin/phpunit --log-junit $(Build.ArtifactStagingDirectory)/test-results.xml
+        else
+          echo "PHPUnit not found, skipping tests."
+        fi
+      workingDirectory: $(rootFolder)
+      displayName: 'Run PHPUnit tests'
+      condition: and(succeeded(), eq(variables.runTests, 'true'))
+      continueOnError: true
+
+    # --- 5. Publish test results (optional) --------------------------------
+    - task: PublishTestResults@2
+      displayName: 'Publish test results'
+      condition: and(succeededOrFailed(), eq(variables.runTests, 'true'))
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(Build.ArtifactStagingDirectory)/test-results.xml'
+        failTaskOnFailedTests: false
+
+    # --- 6. Package files into a ZIP ---------------------------------------
+    - task: ArchiveFiles@2
+      displayName: 'Archive application files'
+      inputs:
+        rootFolderOrFile: '$(rootFolder)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+        # Exclude files that shouldn't ship to production
+        excludeFiles: |
+          **/.git/**
+          **/.github/**
+          **/node_modules/**
+          **/tests/**
+          **/azure-pipelines.yml
+          **/.env.example
+
+    # --- 7. Publish artifact for the deploy stage --------------------------
+    - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      displayName: 'Publish artifact'
+      artifact: drop
+
+# -----------------------------------------------------------------------------
+# STAGE 2: DEPLOY
+# -----------------------------------------------------------------------------
+- stage: Deploy
+  displayName: '🚀 Deploy to Azure App Service'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeploymentJob
+    displayName: 'Deploy PHP Web App'
+    pool:
+      vmImage: $(vmImageName)
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # --- Deploy ZIP to Azure Web App ---------------------------------
+          - task: AzureWebApp@1
+            displayName: 'Deploy to $(webAppName)'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appType: 'webAppLinux'
+              appName: $(webAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              runtimeStack: 'PHP|8.2'
+              startUpCommand: ''
+
+          # --- Optional: smoke test the deployed site ----------------------
+          - script: |
+              echo "Waiting for app to warm up..."
+              sleep 20
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$(webAppName).azurewebsites.net)
+              echo "HTTP status: $STATUS"
+              if [ "$STATUS" -ge 400 ]; then
+                echo "❌ Site returned $STATUS"
+                exit 1
+              fi
+              echo "✅ Site is reachable"
+            displayName: 'Smoke test deployed site'
