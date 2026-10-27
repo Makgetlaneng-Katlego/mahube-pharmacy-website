@@ -11,56 +11,92 @@ $fullname = $_SESSION['fullname'];
 $email = $_SESSION['email'];
 $phone = $_SESSION['phone_number'] ?? 'Not provided';
 $role = $_SESSION['role'] ?? 'customer';
+
+// Build initials for the avatar (e.g. "Pfano Dzivhani" -> "PD")
+$initials = 'U';
+$parts = preg_split('/\s+/', trim($fullname));
+if (count($parts) >= 2) {
+    $initials = strtoupper(mb_substr($parts[0], 0, 1) . mb_substr(end($parts), 0, 1));
+} elseif (count($parts) === 1 && $parts[0] !== '') {
+    $initials = strtoupper(mb_substr($parts[0], 0, 2));
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile - Mahube Pharmacy</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="theme.css">
 </head>
-<body>
-<div class="top-strip"><span>Mahube Pharmacy online health store</span><span>Affordable healthcare products and pharmacist support</span></div>
-<header class="main-header">
-<a href="index.php"><img class="logo" src="images/logo.svg" alt="Mahube Pharmacy"></a>
-<div class="searchbar"><input placeholder="Search for medicines, vitamins and health products"><button>🔍</button></div>
-<div class="header-actions">
-    <span>Hello, <?php echo htmlspecialchars($fullname); ?></span>
-    <a href="logout.php">Logout</a>
-    <a class="action-icon" href="profile.php">👤</a>
-    <a class="action-icon" href="cart.php">🛒<span class="count cart-count">0</span></a>
-</div>
-</header>
-<nav class="navbar"><a href="index.php">Home</a><a href="products.php">Products</a><a href="about.php">About</a><a href="services.php">Services</a><a href="prescription.php">Prescriptions</a><a href="consultation.php">Consultation</a></nav>
-<div class="category-bar"><a href="products.php">Shop All</a><a href="products.php">Pain Relief</a><a href="products.php">Cold & Flu</a><a href="products.php">Vitamins</a><a href="services.php">Clinic Services</a></div>
+<body data-page="profile">
+<?php include 'header.php'; ?>
 
 <main class="wrapper">
-<div class="breadcrumb"><a href="index.php">Home</a> / Profile</div>
-<h1 class="page-title">My Profile</h1>
+    <div class="breadcrumb"><a href="index.php">Home</a> / Profile</div>
+    <h1 class="page-title">My profile</h1>
 
-<div class="content-card profile-box">
-    <div class="profile-avatar">👤</div>
-    <div>
-        <h2><?php echo htmlspecialchars($fullname); ?></h2>
-        <p>Email: <?php echo htmlspecialchars($email); ?></p>
-        <p>Phone: <?php echo htmlspecialchars($phone); ?></p>
-        <p>Role: <?php echo htmlspecialchars($role); ?></p>
-        <span class="status-pill">Active account</span>
-        <br><br>
-        <a href="register.php" class="btn">Edit profile</a>
-        <a href="address.php" class="btn" style="margin-left:10px; background:#2a9d8f;">📍 Manage Address</a>
-        <a href="order_history.php" class="btn" style="margin-left:10px">Order History</a>
+    <div class="content-card profile-box">
+        <div class="profile-avatar" id="pfAvatar"><?php echo htmlspecialchars($initials); ?></div>
+        <div class="profile-info">
+            <h2 id="pfName"><?php echo htmlspecialchars($fullname); ?></h2>
+            <p class="pf-line"><i class="fa-regular fa-envelope"></i> <span id="pfEmail"><?php echo htmlspecialchars($email); ?></span></p>
+            <p class="pf-line"><i class="fa-solid fa-phone"></i> <span id="pfPhone"><?php echo htmlspecialchars($phone); ?></span></p>
+            <p class="pf-line muted"><i class="fa-solid fa-user-tag"></i> Role: <?php echo htmlspecialchars($role); ?></p>
+            <span class="status-pill">Active account</span>
+            <div class="pf-actions">
+                <a href="register.php" class="btn ghost">Edit profile</a>
+                <a href="address.php" class="btn ghost">Manage address</a>
+                <a href="order_history.php" class="btn ghost">Order history</a>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="deals-row">
-    <a class="deal-card" href="cart.php"><img src="images/secure.svg"><div><h3>My Cart</h3><p>View cart and checkout</p></div></a>
-    <a class="deal-card" href="reminder.php"><img src="images/clock.svg"><div><h3>Medication Reminders</h3><p>Manage your reminders</p></div></a>
-    <a class="deal-card" href="logout.php"><img src="images/return.svg"><div><h3>Logout</h3><p>Sign out of your account</p></div></a>
-</div>
+    <div class="menu-list">
+       
+        <a href="order_history.php"><i class="fa-solid fa-receipt"></i><span>Order history</span><i class="fa-solid fa-chevron-right go"></i></a>
+        <a href="address.php"><i class="fa-solid fa-location-dot"></i><span>Manage address</span><i class="fa-solid fa-chevron-right go"></i></a>
+        <a href="logout.php" class="danger"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log out</span></a>
+    </div>
 </main>
-<footer class="footer"><span>Mahube Pharmacy © 2026</span><div class="footer-links"><a href="about.php">About</a><a href="services.php">Services</a><a href="products.php">Products</a><a href="contact.php">Contact</a></div></footer>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <a class="brand" href="index.php"><img src="images/logo-mark.png" alt=""><span class="brand-text">Mahube<b>Pharmacy</b></span></a>
+            <p class="about">Your local pharmacy, online. Order ahead, collect in store, and ask a pharmacist when you need to.</p>
+        </div>
+        <div>
+            <h5>Shop</h5>
+            <a href="products.php">All products</a>
+            <a href="prescription.php">Upload a prescription</a>
+            <a href="cart.php">Your cart</a>
+        </div>
+        <div>
+            <h5>Help</h5>
+            <a href="consultation.php">Book a consultation</a>
+            <a href="reminder.php">Medication reminders</a>
+            <a href="about.php">About us</a>
+            <a href="contact.php">Contact</a>
+        </div>
+        <div>
+            <h5>Visit us</h5>
+            <p>Mahube Valley, South Africa</p>
+            <p>012 000 0000</p>
+            <p>info@mahubepharmacy.co.za</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>&copy; 2026 Mahube Pharmacy</span>
+    </div>
+</footer>
+
 <script src="app.js"></script>
+<script src="site.js"></script>
 </body>
 </html>

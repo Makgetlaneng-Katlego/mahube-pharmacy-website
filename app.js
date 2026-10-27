@@ -1,18 +1,18 @@
 let cart = [];
 
-// ----- Helper: get user email -----
+
 function getUserEmail() {
-    // 1. Check hidden input from PHP (logged‑in user)
+   
     const hiddenEmail = document.getElementById('userEmail');
     if (hiddenEmail && hiddenEmail.value) {
         return hiddenEmail.value;
     }
-    // 2. Check localStorage for guest email
+  
     const stored = localStorage.getItem('guestEmail');
     if (stored) {
         return stored;
     }
-    // 3. Prompt the user (guest)
+   
     const email = prompt('Please enter your email address to receive order confirmations:');
     if (email && email.includes('@') && email.includes('.')) {
         localStorage.setItem('guestEmail', email);
@@ -21,7 +21,7 @@ function getUserEmail() {
     return null;
 }
 
-// ----- Send email after adding item -----
+
 function sendAddToCartEmail(productName, productPrice, quantity) {
     const email = getUserEmail();
     if (!email) {
@@ -54,7 +54,7 @@ function sendAddToCartEmail(productName, productPrice, quantity) {
     .catch(err => console.error('❌ Email error:', err));
 }
 
-// ----- Original functions (with email hook added) -----
+
 function loadCart() {
     try {
         const raw = localStorage.getItem('mahubeCart');
@@ -85,7 +85,7 @@ function updateCartCount() {
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = total);
 }
 
-// ----- MODIFIED: addToCart now sends email -----
+
 function addToCart(id, name, price, img) {
     const existing = cart.find(i => i.id === id);
     let qty = 1;
@@ -105,7 +105,7 @@ function addToCart(id, name, price, img) {
     showMiniCartNotice(name);
     if (document.getElementById('cartItems')) renderCart();
 
-    // --- Send email notification (asynchronously) ---
+   
     sendAddToCartEmail(name, Number(price), qty);
 }
 
@@ -191,7 +191,7 @@ function totals() {
     if (totalEl) totalEl.textContent = 'R' + total.toFixed(2);
 }
 
-// ----- NEW: Handle payment method selection -----
+
 function handleCheckout() {
     const method = document.querySelector('input[name="payment_method"]:checked');
     if (!method) {
@@ -201,11 +201,11 @@ function handleCheckout() {
     if (method.value === 'stripe') {
         payWithStripe();
     } else {
-        checkoutOrder();  // Cash on Delivery
+        checkoutOrder();  
     }
 }
 
-// ----- NEW: Stripe Checkout -----
+
 async function payWithStripe() {
     if (!cart.length) {
         showCartMessage('Your cart is empty.', 'error');
@@ -236,7 +236,7 @@ async function payWithStripe() {
     }
 }
 
-// ----- Existing COD checkout (modified to use COD) -----
+
 async function checkoutOrder() {
     if (!cart.length) {
         showCartMessage('Your cart is empty.', 'error');

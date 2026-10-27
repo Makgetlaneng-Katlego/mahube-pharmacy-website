@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Homepage -->
+    <url>
+        <loc>https://mahubepharmacy.com/</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Login -->
+    <url>
+        <loc>https://mahubepharmacy.com/login</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Create Account -->
+    <url>
+        <loc>https://mahubepharmacy.com/register</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Products (main listing) -->
+    <url>
+        <loc>https://mahubepharmacy.com/products</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- View All Products (sub‑page of Products) -->
+    <url>
+        <loc>https://mahubepharmacy.com/products/all</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Consultation -->
+    <url>
+        <loc>https://mahubepharmacy.com/consultation</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Book Consultation (sub‑page) -->
+    <url>
+        <loc>https://mahubepharmacy.com/consultation/book</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Prescription -->
+    <url>
+        <loc>https://mahubepharmacy.com/prescription</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Upload Prescription (sub‑page) -->
+    <url>
+        <loc>https://mahubepharmacy.com/prescription/upload</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Services -->
+    <url>
+        <loc>https://mahubepharmacy.com/services</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- About Us -->
+    <url>
+        <loc>https://mahubepharmacy.com/about</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Cart -->
+    <url>
+        <loc>https://mahubepharmacy.com/cart</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Process Payments (sub‑page of Cart) -->
+    <url>
+        <loc>https://mahubepharmacy.com/cart/checkout</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Profile -->
+    <url>
+        <loc>https://mahubepharmacy.com/profile</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Manage Address (sub‑page) -->
+    <url>
+        <loc>https://mahubepharmacy.com/profile/address</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Edit Profile (sub‑page) -->
+    <url>
+        <loc>https://mahubepharmacy.com/profile/edit</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Order History (sub‑page) -->
+    <url>
+        <loc>https://mahubepharmacy.com/profile/orders</loc>
+        <lastmod>2026-07-25</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+</urlset>

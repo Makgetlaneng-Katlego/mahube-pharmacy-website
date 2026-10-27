@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = 'Please enter your phone number.';
         $message_type = 'error';
     } else {
-        $db_host = '127.0.0.1';
+        $db_host = '192.168.0.128';
         $db_port = 3307;
         $db_name = 'pharmacy';
-        $db_user = 'root';
+        $db_user = 'Katlego';
         $db_pass = 'm4kg3tl4n3ng';
         try {
             $pdo = new PDO("mysql:host=$db_host;port=$db_port;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);

@@ -15,7 +15,7 @@ $productPrice = floatval($product['price'] ?? 0);
 $quantity = intval($product['quantity'] ?? 1);
 $totalItem = $productPrice * $quantity;
 
-// Validate email
+
 if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['success' => false, 'message' => 'Invalid email address.']);
     exit;

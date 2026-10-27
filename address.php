@@ -12,10 +12,10 @@ $message = '';
 $message_type = '';
 
 // Database config
-$db_host = '127.0.0.1';
+$db_host = '192.168.0.128';
 $db_port = 3307;
 $db_name = 'pharmacy';
-$db_user = 'root';
+$db_user = 'Katlego';
 $db_pass = 'm4kg3tl4n3ng';
 
 try {
@@ -40,14 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_address'])) {
     $address_name = trim($_POST['address_name'] ?? '');
     $delivery_instruction = trim($_POST['delivery_instruction'] ?? '');
 
-    // Basic validation
     if (empty($street_address) || empty($city) || empty($province) || empty($postal_code)) {
         $message = 'Please fill in all required fields (street, city, province, postal code).';
         $message_type = 'error';
     } else {
         try {
             if ($address) {
-                // Update existing address
                 $sql = "UPDATE address SET 
                             street_address = :street,
                             city = :city,
@@ -69,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_address'])) {
                 $message = 'Address updated successfully!';
                 $message_type = 'success';
             } else {
-                // Insert new address
                 $sql = "INSERT INTO address (user_id, street_address, city, province, postal_code, address_name, delivery_instruction)
                         VALUES (:user_id, :street, :city, :province, :postal, :name, :instruction)";
                 $stmt = $pdo->prepare($sql);
@@ -97,84 +94,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_address'])) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manage Address - Mahube Pharmacy</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="theme.css">
 <style>
-    .address-form label { display: block; margin-top: 15px; font-weight: bold; }
-    .address-form input, .address-form textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-    .address-form .required { color: red; }
-    .btn-group { margin-top: 20px; display: flex; gap: 10px; }
+    .required { color: #b3261e; }
+    .btn-group { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .msg.error   { background: #fbecea; color: #9b2c20; }
+    .msg.success { background: #eef5e9; color: #2c5a16; }
 </style>
 </head>
-<body>
-<div class="top-strip"><span>Mahube Pharmacy online health store</span><span>Affordable healthcare products and pharmacist support</span></div>
-<header class="main-header">
-<a href="index.php"><img class="logo" src="images/logo.svg" alt="Mahube Pharmacy"></a>
-<div class="searchbar"><input placeholder="Search..."><button>🔍</button></div>
-<div class="header-actions">
-    <span>Hello, <?php echo htmlspecialchars($_SESSION['fullname']); ?></span>
-    <a href="logout.php">Logout</a>
-    <a class="action-icon" href="profile.php">👤</a>
-    <a class="action-icon" href="cart.php">🛒<span class="count cart-count">0</span></a>
-</div>
-</header>
-<nav class="navbar"><a href="index.php">Home</a><a href="products.php">Products</a><a href="about.php">About</a><a href="services.php">Services</a><a href="prescription.php">Prescriptions</a><a href="consultation.php">Consultation</a></nav>
-<div class="category-bar"><a href="products.php">Shop All</a><a href="products.php">Pain Relief</a><a href="products.php">Cold & Flu</a><a href="products.php">Vitamins</a><a href="services.php">Clinic Services</a></div>
+<body data-page="address">
+<?php include 'header.php'; ?>
 
 <main class="wrapper">
-<div class="breadcrumb"><a href="index.php">Home</a> / <a href="profile.php">Profile</a> / Manage Address</div>
-<h1 class="page-title"><?php echo $address ? 'Edit' : 'Add'; ?> Shipping Address</h1>
+    <div class="breadcrumb"><a href="index.php">Home</a> / <a href="profile.php">Profile</a> / Manage Address</div>
+    <h1 class="page-title"><?php echo $address ? 'Edit' : 'Add'; ?> Shipping Address</h1>
 
-<?php if ($message): ?>
-    <div class="msg <?php echo $message_type; ?> show"><?php echo $message; ?></div>
-<?php endif; ?>
+    <?php if ($message): ?>
+        <div class="msg <?php echo $message_type; ?> show"><?php echo htmlspecialchars($message); ?></div>
+    <?php endif; ?>
 
-<div class="content-card">
-    <form method="POST" class="address-form">
-        <!-- Hidden field to identify submission -->
-        <input type="hidden" name="submit_address" value="1">
+    <section class="content-card form">
+        <form method="POST">
+            <input type="hidden" name="submit_address" value="1">
 
-        <label>Address Name <span class="required">*</span> <small>(e.g., Home, Work)</small></label>
-        <input type="text" name="address_name" value="<?php echo htmlspecialchars($address['address_name'] ?? ''); ?>" placeholder="e.g., Home">
+            <label>Address Name <span class="required">*</span> <small>(e.g., Home, Work)</small></label>
+            <input type="text" name="address_name" value="<?php echo htmlspecialchars($address['address_name'] ?? ''); ?>" placeholder="e.g., Home">
 
-        <label>Street Address <span class="required">*</span></label>
-        <input type="text" name="street_address" value="<?php echo htmlspecialchars($address['street_address'] ?? ''); ?>" required>
+            <label>Street Address <span class="required">*</span></label>
+            <input type="text" name="street_address" value="<?php echo htmlspecialchars($address['street_address'] ?? ''); ?>" required>
 
-        <label>City <span class="required">*</span></label>
-        <input type="text" name="city" value="<?php echo htmlspecialchars($address['city'] ?? ''); ?>" required>
+            <label>City <span class="required">*</span></label>
+            <input type="text" name="city" value="<?php echo htmlspecialchars($address['city'] ?? ''); ?>" required>
 
-        <label>Province <span class="required">*</span></label>
-        <select name="province" required>
-            <option value="">Select Province</option>
-            <?php
-            $provinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'];
-            $current = $address['province'] ?? '';
-            foreach ($provinces as $prov) {
-                $selected = ($prov === $current) ? 'selected' : '';
-                echo "<option value=\"$prov\" $selected>$prov</option>";
-            }
-            ?>
-        </select>
+            <label>Province <span class="required">*</span></label>
+            <select name="province" required>
+                <option value="">Select Province</option>
+                <?php
+                $provinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'];
+                $current = $address['province'] ?? '';
+                foreach ($provinces as $prov) {
+                    $selected = ($prov === $current) ? 'selected' : '';
+                    echo "<option value=\"$prov\" $selected>$prov</option>";
+                }
+                ?>
+            </select>
 
-        <label>Postal Code <span class="required">*</span></label>
-        <input type="text" name="postal_code" value="<?php echo htmlspecialchars($address['postal_code'] ?? ''); ?>" required>
+            <label>Postal Code <span class="required">*</span></label>
+            <input type="text" name="postal_code" value="<?php echo htmlspecialchars($address['postal_code'] ?? ''); ?>" required>
 
-        <label>Delivery Instruction <small>(optional)</small></label>
-        <textarea name="delivery_instruction" rows="3" placeholder="e.g., Leave at the gate, ring bell, etc."><?php echo htmlspecialchars($address['delivery_instruction'] ?? ''); ?></textarea>
+            <label>Delivery Instruction <small>(optional)</small></label>
+            <textarea name="delivery_instruction" rows="3" placeholder="e.g., Leave at the gate, ring bell, etc."><?php echo htmlspecialchars($address['delivery_instruction'] ?? ''); ?></textarea>
 
-        <div class="btn-group">
-            <button type="submit" class="btn" style="background:#2a9d8f;">💾 Save Address</button>
-            <a href="profile.php" class="btn" style="background:#6c757d;">Cancel</a>
-        </div>
-    </form>
-</div>
-
+            <div class="btn-group">
+                <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Save address</button>
+                <a href="profile.php" class="btn ghost">Cancel</a>
+            </div>
+        </form>
+    </section>
 </main>
-<footer class="footer"><span>Mahube Pharmacy © 2026</span><div class="footer-links"><a href="about.php">About</a><a href="services.php">Services</a><a href="products.php">Products</a><a href="contact.php">Contact</a></div></footer>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <a class="brand" href="index.php"><img src="images/logo-mark.png" alt=""><span class="brand-text">Mahube<b>Pharmacy</b></span></a>
+            <p class="about">Your local pharmacy, online. Order ahead, collect in store, and ask a pharmacist when you need to.</p>
+        </div>
+        <div>
+            <h5>Shop</h5>
+            <a href="products.php">All products</a>
+            <a href="prescription.php">Upload a prescription</a>
+            <a href="cart.php">Your cart</a>
+        </div>
+        <div>
+            <h5>Help</h5>
+            <a href="consultation.php">Book a consultation</a>
+            <a href="reminder.php">Medication reminders</a>
+            <a href="about.php">About us</a>
+            <a href="contact.php">Contact</a>
+        </div>
+        <div>
+            <h5>Visit us</h5>
+            <p>Mahube Valley, South Africa</p>
+            <p>012 000 0000</p>
+            <p>info@mahubepharmacy.co.za</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>&copy; 2026 Mahube Pharmacy</span>
+    </div>
+</footer>
+
 <script src="app.js"></script>
+<script src="site.js"></script>
 </body>
 </html>
