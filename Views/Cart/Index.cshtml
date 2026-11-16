@@ -1,0 +1,95 @@
+﻿@model List<(Mahube_Pharmacy.Models.Product Product, int Quantity)>
+@{
+    ViewData["Title"] = "My Cart";
+    ViewData["PageId"] = "cart";
+    var subtotal = Model.Sum(x => x.Product.Price * x.Quantity);
+    const decimal serviceFee = 20.00m;
+    var total = subtotal + serviceFee;
+}
+
+@section Styles {
+<style>
+    .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 30px; align-items: start; }
+    .cart-items  { display: flex; flex-direction: column; gap: 16px; }
+    .cart-row { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 20px;
+                display:grid; grid-template-columns: 96px 1fr auto; gap:18px; align-items:center; }
+    .cart-row img { height:84px; width:84px; object-fit:contain; background:#f6f7f4; border-radius:10px; padding:6px; }
+    .cart-row h3 { font-size:16px; margin-bottom:4px; }
+    .cart-row .unit { font-size:14px; color:var(--muted); margin-bottom:8px; }
+    .cart-row .line-total { font-weight:700; color:var(--text); font-size:15px; }
+    .cart-summary { background:#fff; border:1px solid var(--line); border-radius:16px; padding:24px; position:sticky; top:100px; }
+    .cart-summary h2 { font-size:20px; margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:12px; }
+    .summary-row { display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px; color:var(--muted); }
+    .summary-row strong { color:var(--text); }
+    .summary-row.grand { font-size:18px; font-weight:700; border-top:1px solid var(--line); padding-top:16px; margin-top:16px; }
+    .summary-row.grand strong { font-size:22px; color:var(--green); }
+    .empty-cart { text-align:center; padding:60px 20px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+    .empty-cart i { font-size:40px; color:#c9d3c4; margin-bottom:14px; display:block; }
+    @@media(max-width:850px){ .cart-layout{grid-template-columns:1fr} .cart-summary{position:static} .cart-row{grid-template-columns:72px 1fr; } .cart-row .line-total{grid-column:2;text-align:right} }
+</style>
+}
+
+<div class="breadcrumb"><a asp-controller="Home" asp-action="Index">Home</a> / Cart</div>
+<h1 class="page-title">My Cart</h1>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <h2>Your cart is empty</h2>
+        <p style="color:var(--muted);margin-bottom:22px">Browse our products and start shopping.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn">Browse products</a>
+    </div>
+}
+else
+{
+    <div class="cart-layout">
+        <div class="cart-items">
+            @foreach (var item in Model)
+            {
+                <div class="cart-row">
+                    <img src="@Url.Content(ImageHelper.GetProductImage(item.Product.Image))"
+                         alt="@item.Product.ProductName"
+                         onerror="this.onerror=null;this.src='@ImageHelper.Placeholder';" />
+                    <div>
+                        <h3>@item.Product.ProductName</h3>
+                        <p class="unit">R @item.Product.Price.ToString("N2") &middot; Qty @item.Quantity</p>
+                        <div class="qty" style="display:inline-flex;margin-top:4px">
+                            <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.Product.ProductId" />
+                                <input type="hidden" name="delta" value="-1" />
+                                <button type="submit" aria-label="Decrease">−</button>
+                            </form>
+                            <span>@item.Quantity</span>
+                            <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.Product.ProductId" />
+                                <input type="hidden" name="delta" value="1" />
+                                <button type="submit" aria-label="Increase">+</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="line-total">R @((item.Product.Price * item.Quantity).ToString("N2"))</div>
+                        <form asp-controller="Cart" asp-action="Remove" method="post" style="margin-top:10px">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.Product.ProductId" />
+                            <button type="submit" style="border:0;background:none;color:#b3261e;font-size:13.5px;cursor:pointer">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <aside class="cart-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-row"><span>Subtotal</span><strong>R @subtotal.ToString("N2")</strong></div>
+            <div class="summary-row"><span>Service Fee</span><strong>R @serviceFee.ToString("N2")</strong></div>
+            <div class="summary-row grand"><span>Total</span><strong>R @total.ToString("N2")</strong></div>
+            <a asp-controller="Checkout" asp-action="Index" class="btn" style="width:100%; margin-top:10px; display:block; text-align:center">
+                Proceed to checkout <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </aside>
+    </div>
+}

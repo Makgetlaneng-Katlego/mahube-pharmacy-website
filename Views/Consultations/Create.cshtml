@@ -1,0 +1,91 @@
+﻿@model Mahube_Pharmacy.Models.Consultation
+@{
+    ViewData["Title"] = "Consultation";
+    ViewData["PageId"] = "consultation";
+}
+
+@section Styles {
+    <style>
+        .id-box {
+            background: #eef5e9;
+            border: 2px dashed var(--green, #3a7d1e);
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .id-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--green, #3a7d1e);
+            letter-spacing: 2px;
+        }
+
+        .id-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #555;
+        }
+    </style>
+}
+
+<h1 class="page-title">Pharmacist Consultation</h1>
+
+<div class="hero" style="grid-template-columns:1fr 1fr">
+    <div>
+        <h1 style="font-size:42px">Ask our pharmacist</h1>
+        <p>Request advice about medication, symptoms or prescription instructions.</p>
+    </div>
+    <img src="~/images/consultation_photo.svg" alt="Consultation">
+</div>
+
+<section class="content-card form">
+    @if (TempData["Message"] is string msg)
+    {
+        <div class="msg @TempData["MessageType"] show">
+            @msg
+            @if (TempData["NewConsultationId"] is long newId)
+            {
+                <div class="id-box">
+                    <div class="id-label">Your Consultation ID</div>
+                    <div class="id-number">@newId</div>
+                    <p style="margin-top:8px; font-size:14px;">
+                        <i class="fa-solid fa-thumbtack"></i> Save this ID. Use it to check the pharmacist's response below.
+                    </p>
+                </div>
+            }
+        </div>
+    }
+
+    <form method="POST" asp-action="Create">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="action" value="submit">
+
+        <label>Full Name *</label>
+        <input type="text" name="Fullname" placeholder="Enter your full name" value="@Model.Fullname" required>
+
+        <label>Email Address *</label>
+        <input type="email" name="Email" placeholder="Enter your email address" value="@Model.Email" required>
+
+        <label>Phone Number *</label>
+        <input type="text" name="PhoneNumber" placeholder="Enter your phone number" value="@Model.PhoneNumber" required>
+
+        <label>Consultation Type *</label>
+        <select name="ConsultationType" required>
+            <option value="Medication Advice" selected="@(Model.ConsultationType == "Medication Advice")">Medication Advice</option>
+            <option value="Prescription Question" selected="@(Model.ConsultationType == "Prescription Question")">Prescription Question</option>
+            <option value="Side Effects" selected="@(Model.ConsultationType == "Side Effects")">Side Effects</option>
+            <option value="General Health Question" selected="@(Model.ConsultationType == "General Health Question")">General Health Question</option>
+        </select>
+
+        <label>Your Question *</label>
+        <textarea name="Description" placeholder="Describe what you need help with" required>@Model.Description</textarea>
+
+        <label>Preferred Appointment Time (optional)</label>
+        <input type="datetime-local" name="preferred_datetime"
+               value="@(Model.PreferredDate?.ToString("yyyy-MM-ddTHH:mm"))">
+
+        <button class="btn" style="width:100%">Request Consultation</button>
+    </form>
+</section>

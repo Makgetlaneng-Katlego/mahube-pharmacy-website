@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Mahube_Pharmacy.Models.Product>
+@{
+    ViewData["Title"] = "Home";
+    ViewData["PageId"] = "home";
+}
+
+@* ---- Flash message (renders TempData set by PrescriptionsController, etc.) ---- *@
+@if (TempData["Message"] is string flashMsg)
+{
+    var flashType = TempData["MessageType"] as string ?? "success";
+    var isError = flashType == "error";
+    var bgColor = isError ? "#f8d7da" : "#d4edda";
+    var fgColor = isError ? "#721c24" : "#155724";
+    var bdColor = isError ? "#f5c6cb" : "#c3e6cb";
+
+    <div role="alert"
+         style="max-width:1200px;margin:1rem auto 0;padding:1rem 1.25rem;border-radius:8px;background:@bgColor;color:@fgColor;border:1px solid @bdColor;font-size:.95rem;">
+        @flashMsg
+    </div>
+}
+
+<section class="hero">
+    <div>
+        <h1>Medicine and advice,<br /><span>without the queue.</span></h1>
+        <p>Order online, upload your prescription, and collect when it is ready. A pharmacist is a message away if you are not sure what to take.</p>
+        <div class="hero-actions">
+            <a asp-controller="Product" asp-action="Index" class="btn">Shop medicines</a>
+            <a asp-controller="Prescriptions" asp-action="Create" class="btn ghost">Upload a prescription</a>
+        </div>
+    </div>
+    <img src="~/images/hero.svg" alt="" />
+</section>
+
+<section class="promo-banner">
+    <strong>This week</strong>
+    <span>Selected pain relief and vitamins are on special in store and online.</span>
+</section>
+
+<section class="section">
+    <div class="deals-row">
+        <a asp-controller="Prescriptions" asp-action="Create" class="deal-card">
+            <img src="~/favicon.png" alt="Prescription" />
+            <div><h3>Upload a prescription</h3><p>We check it and get your order ready</p></div>
+        </a>
+        <a asp-controller="Consultations" asp-action="Create" class="deal-card">
+            <img src="~/favicon.png" alt="Consultation" />
+            <div><h3>Talk to a pharmacist</h3><p>Book a quick consultation</p></div>
+        </a>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <h2>Popular right now</h2>
+        <a class="view" asp-controller="Product" asp-action="Index">View all</a>
+    </div>
+    <div class="product-grid">
+        @foreach (var product in Model)
+        {
+            <div class="product">
+                <img src="@Url.Content(ImageHelper.GetProductImage(product.Image))"
+                     alt="@product.ProductName"
+                     loading="lazy"
+                     onerror="this.onerror=null;this.src='@ImageHelper.Placeholder';" />
+                <h3>@product.ProductName</h3>
+                <p class="price">R @product.Price.ToString("N2")</p>
+                <form asp-controller="Cart" asp-action="Add" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@product.ProductId" />
+                    <button type="submit" @(product.StockQuantity > 0 ? "" : "disabled")>Add to cart</button>
+                </form>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <p>No products found.</p>
+        }
+    </div>
+</section>
+
+<section class="info-band">
+    <div class="info-item"><img src="~/images/secure.svg" alt="Secure" /><div><h4>Pay the way you prefer</h4><p>Card, EFT, scan to pay or at collection</p></div></div>
+    <div class="info-item"><img src="~/images/support.svg" alt="Support" /><div><h4>Real pharmacists</h4><p>Ask before you buy</p></div></div>
+    <div class="info-item"><img src="~/images/return.svg" alt="Returns" /><div><h4>Collect when ready</h4><p>Scan your code at the counter</p></div></div>
+</section>

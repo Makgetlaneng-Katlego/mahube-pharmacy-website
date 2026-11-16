@@ -1,0 +1,43 @@
+﻿@model Mahube_Pharmacy.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmed";
+    ViewData["PageId"] = "confirmation";
+}
+
+<div class="receipt-box show" style="max-width:560px;margin:40px auto">
+    <div class="receipt-success">
+        <i class="fa-solid fa-circle-check"></i>
+        Thank you! Your order has been placed.
+    </div>
+
+    <div class="receipt-header">
+        <h2 style="font-size:18px;margin-bottom:6px">Order #@Model.OrderId</h2>
+        <p style="font-size:13.5px;color:var(--muted)">
+            Placed @(Model.OrderDate?.ToString("dd MMM yyyy, HH:mm") ?? "—")
+        </p>
+    </div>
+
+    <div class="receipt-row"><span>Status</span><strong>@Model.Status</strong></div>
+    <div class="receipt-row"><span>Payment</span><strong>@Model.PaymentStatus (@Model.PaymentMethod)</strong></div>
+    @if (!string.IsNullOrEmpty(Model.DeliveryAddressSnapshot))
+    {
+        <div class="receipt-row"><span>Delivery</span><strong style="text-align:right">@Model.DeliveryAddressSnapshot</strong></div>
+    }
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0" />
+
+    <div class="receipt-row"><span>Subtotal</span><strong>R @Model.Subtotal.ToString("N2")</strong></div>
+    <div class="receipt-row"><span>Service Fee</span><strong>R @Model.ServiceFee.ToString("N2")</strong></div>
+    <div class="receipt-row" style="font-size:18px;font-weight:700;border-top:1px solid var(--line);padding-top:14px;margin-top:14px">
+        <span>Total</span><strong>R @Model.TotalAmount.ToString("N2")</strong>
+    </div>
+
+    <p style="text-align:center;margin-top:20px;color:var(--muted);font-size:14px">
+        A pharmacist will review your order shortly.
+    </p>
+
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+        <a asp-controller="Home" asp-action="Index" class="btn">Continue shopping</a>
+        <a asp-controller="Product" asp-action="Index" class="btn ghost">Browse products</a>
+    </div>
+</div>

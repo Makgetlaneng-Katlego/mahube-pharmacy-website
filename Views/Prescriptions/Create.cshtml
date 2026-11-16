@@ -1,0 +1,91 @@
+﻿@model Mahube_Pharmacy.Models.Prescription
+@{
+    ViewData["Title"] = "Prescription Upload";
+    ViewData["PageId"] = "prescription";
+}
+
+@section Styles {
+    <style>
+        .id-box {
+            background: #eef5e9;
+            border: 2px dashed var(--green, #3a7d1e);
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .id-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--green, #3a7d1e);
+            letter-spacing: 2px;
+        }
+
+        .id-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #555;
+        }
+    </style>
+}
+
+<h1 class="page-title">Upload Prescription</h1>
+
+<div class="hero" style="grid-template-columns:1fr 1fr">
+    <div>
+        <h1 style="font-size:42px">Send your prescription online</h1>
+        <p>Upload a prescription image or PDF and add notes for the pharmacist.</p>
+    </div>
+    <img src="~/images/prescription_photo.svg" alt="Prescription upload">
+</div>
+
+<section class="content-card form">
+    @if (TempData["Message"] is string msg)
+    {
+        <div class="msg @TempData["MessageType"] show">
+            @msg
+            @if (TempData["NewPrescriptionId"] is int newId)
+            {
+                <div class="id-box">
+                    <div class="id-label">Your Prescription ID</div>
+                    <div class="id-number">@newId</div>
+                    <p style="margin-top:8px; font-size:14px;">
+                        <i class="fa-solid fa-thumbtack"></i> Save this ID. Use it to check the pharmacist's response below.
+                    </p>
+                </div>
+            }
+        </div>
+    }
+
+    <form method="POST" asp-action="Create" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="action" value="upload">
+
+        <label>Your Email *</label>
+        <input type="email" name="UserEmail" placeholder="Enter your email address" value="@Model.UserEmail" required>
+
+        <label>Doctor's Name *</label>
+        <input type="text" name="DoctorName" placeholder="Full name of the prescribing doctor" value="@Model.DoctorName" required>
+
+        <label>Date Prescribed *</label>
+        <input type="date" name="DatePrescribed"
+               value="@(Model.DatePrescribed == default ? "" : Model.DatePrescribed.ToString("yyyy-MM-dd"))" required>
+
+        <label>Prescription Type *</label>
+        <select name="Type" required>
+            <option value="New Prescription" selected="@(Model.Type == "New Prescription")">New Prescription</option>
+            <option value="Refill" selected="@(Model.Type == "Refill")">Refill</option>
+            <option value="Chronic Medication" selected="@(Model.Type == "Chronic Medication")">Chronic Medication</option>
+            <option value="Other" selected="@(Model.Type == "Other")">Other</option>
+        </select>
+
+        <label>Upload Prescription (image or PDF) *</label>
+        <input type="file" name="prescription_file" accept="image/*,.pdf" required>
+
+        <label>Notes for Pharmacist (optional)</label>
+        <textarea name="Notes" placeholder="Example: I need a refill for my monthly medication">@Model.Notes</textarea>
+
+        <button class="btn" style="width:100%">Submit Prescription</button>
+    </form>
+</section>

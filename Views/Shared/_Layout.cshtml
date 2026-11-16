@@ -1,0 +1,127 @@
+﻿@using Mahube_Pharmacy.Services
+@inject ICartService CartSvc
+@using System.Security.Claims
+@{
+    var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+    var fullName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
+    var pageId = ViewData["PageId"]?.ToString() ?? "";
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    int cartCount = 0;
+    try { cartCount = CartSvc.GetCart().Values.Sum(); } catch { /* session not initialised yet */ }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Mahube Pharmacy</title>
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/theme.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body data-page="@pageId">
+
+    <div class="top-strip">
+        <span>Order online, collect in store - skip the queue.</span>
+        <span><i class="fa-solid fa-phone"></i>012 000 0000</span>
+    </div>
+
+    <header class="main-header">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <img src="~/favicon.png" alt="Mahube Pharmacy" />
+            <span class="brand-text">Mahube<b>Pharmacy</b></span>
+        </a>
+
+        <form class="searchbar" asp-controller="Product" asp-action="Index" method="get" role="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input name="q" placeholder="Search medicines, vitamins, brands" aria-label="Search products" />
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="header-actions">
+            @if (isLoggedIn)
+            {
+                <a class="auth-link" asp-controller="Home" asp-action="Index">Hello, @fullName</a>
+                <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="auth-link" style="border:0;background:none;cursor:pointer;padding:0">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a class="auth-link" asp-controller="Auth" asp-action="Login">Log in</a>
+                <a class="btn-small" asp-controller="Auth" asp-action="Register">Create account</a>
+            }
+            <a class="action-icon" href="#" aria-label="My profile"><i class="fa-regular fa-circle-user"></i></a>
+            <a class="action-icon" asp-controller="Cart" asp-action="Index" aria-label="Cart">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="count cart-count">@cartCount</span>
+            </a>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <a asp-controller="Home" asp-action="Index" class="@(current == "Home" ? "active" : "")">Home</a>
+        <a asp-controller="Product" asp-action="Index" class="@(current == "Product" ? "active" : "")">Products</a>
+        <a asp-controller="Cart" asp-action="Index" class="@(current == "Cart" ? "active" : "")">Cart</a>
+        <a asp-controller="Consultations" asp-action="Create" class="@(current == "Consultations" ? "active" : "")">Consultations</a>
+        <a asp-controller="Prescriptions" asp-action="Create" class="@(current == "Prescriptions" ? "active" : "")">Prescriptions</a>
+    </nav>
+
+    @if (pageId == "home")
+    {
+        <div class="category-bar">
+            <a asp-controller="Product" asp-action="Index">Shop All</a>
+            <a asp-controller="Product" asp-action="Index">Pain Relief</a>
+            <a asp-controller="Product" asp-action="Index">Cold &amp; Flu</a>
+            <a asp-controller="Product" asp-action="Index">Vitamins</a>
+            <a href="#">Clinic Services</a>
+        </div>
+    }
+
+    <main class="wrapper">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/favicon.png" alt="" />
+                    <span class="brand-text">Mahube<b>Pharmacy</b></span>
+                </a>
+                <p class="about">Your local pharmacy, online. Order ahead, collect in store, and ask a pharmacist when you need to.</p>
+            </div>
+            <div>
+                <h5>Shop</h5>
+                <a asp-controller="Product" asp-action="Index">All products</a>
+                <a asp-controller="Prescriptions" asp-action="Create">Upload a prescription</a>
+                <a asp-controller="Cart" asp-action="Index">Your cart</a>
+            </div>
+            <div>
+                <h5>Help</h5>
+                <a asp-controller="Consultations" asp-action="Create">Book a consultation</a>
+                <a href="#">Medication reminders</a>
+                <a href="#">About us</a>
+                <a href="#">Contact</a>
+            </div>
+            <div>
+                <h5>Visit us</h5>
+                <p>Mahube Valley, South Africa</p>
+                <p>012 000 0000</p>
+                <p>info@mahubepharmacy.co.za</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; @DateTime.Now.Year Mahube Pharmacy</span>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

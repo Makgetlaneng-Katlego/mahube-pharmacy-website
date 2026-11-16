@@ -1,0 +1,57 @@
+﻿@model Mahube_Pharmacy.Models.Address
+@{
+    ViewData["Title"] = "Manage Address";
+    ViewData["PageId"] = "address";
+    var returnUrl = ViewBag.ReturnUrl as string;
+}
+
+<div class="breadcrumb"><a asp-controller="Home" asp-action="Index">Home</a> / Manage Address</div>
+<h1 class="page-title">Add Shipping Address</h1>
+
+<section class="content-card form" style="max-width:720px">
+    <form asp-controller="Address" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+        <label asp-for="AddressName">Address Name <small style="color:var(--muted);font-weight:400">(e.g. Home, Work)</small></label>
+        <input asp-for="AddressName" placeholder="e.g. Home" />
+
+        <label asp-for="StreetAddress">Street Address *</label>
+        <input asp-for="StreetAddress" required />
+
+        <label asp-for="City">City *</label>
+        <input asp-for="City" required />
+
+        <label asp-for="Province">Province *</label>
+        <select asp-for="Province" required>
+            <option value="">Select Province</option>
+            <option>Eastern Cape</option>
+            <option>Free State</option>
+            <option>Gauteng</option>
+            <option>KwaZulu-Natal</option>
+            <option>Limpopo</option>
+            <option>Mpumalanga</option>
+            <option>North West</option>
+            <option>Northern Cape</option>
+            <option>Western Cape</option>
+        </select>
+
+        <label asp-for="PostalCode">Postal Code *</label>
+        <input asp-for="PostalCode" required />
+
+        <label asp-for="DeliveryInstruction">Delivery Instruction <small style="color:var(--muted);font-weight:400">(optional)</small></label>
+        <textarea asp-for="DeliveryInstruction" rows="3" placeholder="e.g. Leave at the gate, ring bell, etc."></textarea>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+            <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Save address</button>
+            @if (!string.IsNullOrEmpty(returnUrl))
+            {
+                <a href="@returnUrl" class="btn ghost">Cancel</a>
+            }
+            else
+            {
+                <a asp-controller="Cart" asp-action="Index" class="btn ghost">Cancel</a>
+            }
+        </div>
+    </form>
+</section>

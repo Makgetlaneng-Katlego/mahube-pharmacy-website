@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Log in";
+    ViewData["PageId"] = "login";
+    Layout = "_AuthLayout";
+    var returnUrl = ViewBag.ReturnUrl as string;
+    var googleClientId = ViewBag.GoogleClientId as string ?? "";
+}
+
+<div class="auth-card">
+    <a class="brand" asp-controller="Home" asp-action="Index">
+        <img src="~/favicon.png" alt="" />
+        <span class="brand-text">Mahube<b>Pharmacy</b></span>
+    </a>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to see your orders, prescriptions and reminders.</p>
+
+    @if (ViewBag.Error is string err && !string.IsNullOrEmpty(err))
+    {
+        <div class="auth-alert show">@err</div>
+    }
+
+    <form asp-controller="Auth" asp-action="Login" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+        <div class="field">
+            <label for="loginId">Email or phone</label>
+            <div class="field-box">
+                <i class="lead fa-regular fa-user"></i>
+                <input id="loginId" type="text" name="identifier" placeholder="you@example.com or 082 123 4567" autocomplete="username" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="loginPass">Password</label>
+            <div class="field-box">
+                <i class="lead fa-solid fa-lock"></i>
+                <input id="loginPass" type="password" name="password" placeholder="Your password" autocomplete="current-password" required />
+                <button type="button" class="eye" onclick="togglePw(this)" aria-label="Show or hide password">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-between">
+            <label class="check" style="margin:0"><input type="checkbox" name="remember" /> Remember me</label>
+            <a href="#">Need help signing in?</a>
+        </div>
+        <button class="auth-main-btn" type="submit">Log in</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(googleClientId))
+    {
+        <div class="auth-divider" style="display:flex;align-items:center;gap:10px;margin:18px 0;color:#94a3b8;font-size:13px;">
+            <span style="flex:1;height:1px;background:#e2e8f0;"></span>
+            <span>or</span>
+            <span style="flex:1;height:1px;background:#e2e8f0;"></span>
+        </div>
+
+        <div id="g_id_onload"
+             data-client_id="@googleClientId"
+             data-callback="handleGoogleCredential"
+             data-auto_prompt="false"
+             data-ux_mode="popup">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="signin_with"
+             data-shape="rectangular"
+             data-logo_alignment="left"
+             data-width="360"></div>
+
+        <div id="googleError" class="auth-alert" style="display:none;margin-top:12px;"></div>
+    }
+
+    <p class="auth-switch">New to Mahube? <a asp-controller="Auth" asp-action="Register">Create an account</a></p>
+</div>
+<a class="auth-back" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Back to the shop</a>
+
+@section Scripts {
+    <script>
+        function togglePw(btn) {
+            var input = btn.parentNode.querySelector('input');
+            var icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type = 'text'; icon.className = 'fa-regular fa-eye-slash'; }
+            else { input.type = 'password'; icon.className = 'fa-regular fa-eye'; }
+        }
+
+        @if (!string.IsNullOrEmpty(googleClientId))
+        {
+                <text>
+                    function handleGoogleCredential(response) {
+                        var errBox = document.getElementById('googleError');
+                        if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+
+                        fetch('@Url.Action("GoogleSignIn", "Auth")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                credential: response.credential,
+                                returnUrl: '@(returnUrl ?? "")'
+                            })
+                        })
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            if (data.success && data.redirectUrl) {
+                                window.location.href = data.redirectUrl;
+                            } else if (errBox) {
+                                errBox.style.display = 'block';
+                                errBox.textContent = data.error || 'Google Sign-In failed.';
+                            }
+                        })
+                        .catch(function () {
+                            if (errBox) {
+                                errBox.style.display = 'block';
+                                errBox.textContent = 'Network error — please try again.';
+                            }
+                        });
+                    }
+                </text>
+        }
+    </script>
+
+    @if (!string.IsNullOrEmpty(googleClientId))
+    {
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+    }
+}

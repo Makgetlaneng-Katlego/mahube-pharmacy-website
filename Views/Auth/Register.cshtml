@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Create account";
+    ViewData["PageId"] = "register";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card">
+    <a class="brand" asp-controller="Home" asp-action="Index">
+        <img src="~/favicon.png" alt="" />
+        <span class="brand-text">Mahube<b>Pharmacy</b></span>
+    </a>
+    <h1>Create an account</h1>
+    <p class="sub">Join Mahube Pharmacy and take control of your health.</p>
+
+    @if (ViewBag.Error is string err && !string.IsNullOrEmpty(err))
+    {
+        <div class="auth-alert show">@err</div>
+    }
+
+    <form asp-controller="Auth" asp-action="Register" method="post" novalidate>
+        @Html.AntiForgeryToken()
+
+        <div class="field">
+            <label for="regName">Full name</label>
+            <div class="field-box">
+                <i class="lead fa-regular fa-user"></i>
+                <input id="regName" type="text" name="fullname" placeh          older="Your full name" autocomplete="name" required />
+            </div>
+        </div>
+        <div class="field">
+            <label for="regEmail">Email</label>
+            <div class="field-box">
+                <i class="lead fa-regular fa-envelope"></i>
+                <input id="regEmail" type="email" name="email" placeholder="you@@example.com" autocomplete="email" required />
+            </div>
+        </div>
+        <div class="field">
+            <label for="regPhone">Phone number</label>
+            <div class="field-box">
+                <i class="lead fa-solid fa-phone"></i>
+                <input id="regPhone" type="tel" name="phone" placeholder="e.g. 071 234 5678" autocomplete="tel" required />
+            </div>
+        </div>
+        <div class="field">
+            <label for="regPass">Password</label>
+            <div class="field-box">
+                <i class="lead fa-solid fa-lock"></i>
+                <input id="regPass" type="password" name="password" placeholder="8+ chars, number &amp; symbol" autocomplete="new-password" minlength="8" required />
+                <button type="button" class="eye" onclick="togglePw(this)" aria-label="Show or hide password">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
+            <ul id="pwRules" style="list-style:none;padding:6px 2px 0;margin:0;font-size:12px;line-height:1.6;">
+                <li data-rule="len" style="color:#777;">• At least 8 characters</li>
+                <li data-rule="num" style="color:#777;">• Contains a number</li>
+                <li data-rule="sym" style="color:#777;">• Contains a special character (e.g. ! @@ # $ %)</li>
+            </ul>
+        </div>
+        <div class="field">
+            <label for="regPass2">Confirm password</label>
+            <div class="field-box">
+                <i class="lead fa-solid fa-lock"></i>
+                <input id="regPass2" type="password" name="confirmPassword" placeholder="Re-enter your password" autocomplete="new-password" minlength="8" required />
+                <button type="button" class="eye" onclick="togglePw(this)" aria-label="Show or hide password">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <label class="check"><input type="checkbox" required /> I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a></label>
+
+        <button class="auth-main-btn" type="submit">Create account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a asp-controller="Auth" asp-action="Login">Log in</a></p>
+</div>
+<a class="auth-back" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Back to the shop</a>
+
+@section Scripts {
+    <script>
+        function togglePw(btn) {
+            var input = btn.parentNode.querySelector('input');
+            var icon = btn.querySelector('i');
+            if (input.type === 'password') { input.type = 'text'; icon.className = 'fa-regular fa-eye-slash'; }
+            else { input.type = 'password'; icon.className = 'fa-regular fa-eye'; }
+        }
+
+        (function() {
+            var input = document.getElementById('regPass');
+            var rules = document.getElementById('pwRules');
+            if (!input || !rules) return;
+
+            var checks = {
+                len: function(v) { return v.length >= 8; },
+                num: function(v) { return /\d/.test(v); },
+                sym: function(v) { return /[^A-Za-z0-9]/.test(v); }
+            };
+
+            function update() {
+                var v = input.value;
+                rules.querySelectorAll('li').forEach(function(li) {
+                    var ok = checks[li.dataset.rule](v);
+                    li.style.color = ok ? '#2e7d32' : '#777';
+                    li.style.fontWeight = ok ? '600' : '400';
+                });
+            }
+
+            input.addEventListener('input', update);
+            update();
+        })();
+    </script>
+}

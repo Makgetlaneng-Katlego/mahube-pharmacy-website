@@ -1,0 +1,58 @@
+﻿@model List<Mahube_Pharmacy.Models.Product>
+@{
+    ViewData["Title"] = "Products";
+    ViewData["PageId"] = "products";
+    var search = ViewData["Search"] as string;
+}
+
+<h1 class="page-title">Products</h1>
+
+<form method="get" asp-controller="Product" asp-action="Index">
+    <div class="searchbar" style="margin-bottom:18px">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input name="q" value="@search" placeholder="Search medication, vitamins and health products" />
+        <button type="submit">Search</button>
+    </div>
+</form>
+
+<div class="category-bar" style="padding:14px 0;background:transparent;box-shadow:none;border:0">
+    <a href="#">Pain Relief</a>
+    <a href="#">Cold &amp; Flu</a>
+    <a href="#">Allergy</a>
+    <a href="#">Digestive Health</a>
+    <a href="#">Vitamins</a>
+    <a href="#">Prescription Support</a>
+</div>
+
+<section class="section">
+    <div class="section-head">
+        <h2>Medication &amp; Health Products</h2>
+        <span class="view">@Model.Count products</span>
+    </div>
+    <div class="product-grid">
+        @foreach (var p in Model)
+        {
+            <div class="product">
+                <img src="@Url.Content(ImageHelper.GetProductImage(p.Image))"
+                     alt="@p.ProductName"
+                     loading="lazy"
+                     onerror="this.onerror=null;this.src='@ImageHelper.Placeholder';" />
+                <h3>@p.ProductName</h3>
+                @if (!string.IsNullOrWhiteSpace(p.Description))
+                {
+                    <p style="font-size:13px;color:var(--muted);margin-bottom:8px">@p.Description</p>
+                }
+                <p class="price">R @p.Price.ToString("N2")</p>
+                <form asp-controller="Cart" asp-action="Add" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@p.ProductId" />
+                    <button type="submit" @(p.StockQuantity > 0 ? "" : "disabled")>Add to cart</button>
+                </form>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <p>No products found in database.</p>
+        }
+    </div>
+</section>
